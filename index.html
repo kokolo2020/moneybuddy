@@ -426,7 +426,7 @@ select.form-input option { background: var(--surface2); }
 <script>
 const SUPABASE_URL = 'https://mjnigheggxtythytsqle.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qbmlnaGVnZ3h0eXRoeXRzcWxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNzYwMDcsImV4cCI6MjA5NTY1MjAwN30.mh1psePuKeQ8SH5uita7BsUKd6wd5IwHVVlDmJCMA0Q';
-const CLAUDE_KEY = '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';
+const CLAUDE_KEY = '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';
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -679,23 +679,12 @@ function toBase64(file) {
 }
 
 async function parseReceiptWithClaude(base64, mediaType) {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+  const res = await fetch('https://n8n.gotrichnow.com/webhook/e20febcf-9d5f-4a23-8c13-e988e784c580', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': CLAUDE_KEY, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-    body: JSON.stringify({
-      model: 'claude-opus-4-6',
-      max_tokens: 300,
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
-          { type: 'text', text: 'Extract from this receipt: merchant name, total amount (number only, no currency), date (YYYY-MM-DD), and category (Food/Transport/Shopping/Health/Entertainment/Bills/Other). Return ONLY valid JSON: {"merchant":"...","amount":0,"date":"...","category":"..."}' }
-        ]
-      }]
-    })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ imageData: base64, mediaType: mediaType })
   });
-  const data = await res.json();
-  const text = data.content?.[0]?.text || '';
+  const text = await res.text();
   return JSON.parse(text.replace(/```json|```/g,'').trim());
 }
 
