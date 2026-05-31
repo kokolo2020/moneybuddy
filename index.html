@@ -643,7 +643,7 @@ function renderRecent(expenses) {
   document.getElementById('recent-list').innerHTML = expenses.map(e => {
     const d = new Date(e.date || e.created_at);
     const dateStr = d.toLocaleDateString('en-GB', {day:'numeric',month:'short'});
-    return `<div class="tx-item">
+    return `<div class="tx-item" onclick="showExpenseDetail(${JSON.stringify(e).replace(/"/g,'&quot;')})" style="cursor:pointer;">
       <div class="tx-icon" style="background:${CAT_COLORS[e.category]||'#7d8590'}22;">${CAT_EMOJI[e.category]||'📦'}</div>
       <div class="tx-info">
         <div class="tx-merchant">${e.merchant}</div>
@@ -889,6 +889,23 @@ function renderTopMerchants(expenses) {
 }
 
 // NAV
+function showExpenseDetail(e) {
+  document.getElementById('ed-merchant').textContent = e.merchant || '-';
+  document.getElementById('ed-amount').textContent = '-฿' + parseFloat(e.amount).toLocaleString('th-TH', {maximumFractionDigits:0});
+  document.getElementById('ed-date').textContent = e.date || '-';
+  document.getElementById('ed-category').textContent = e.category || '-';
+  const loc = e.location || '';
+  document.getElementById('ed-location').textContent = loc || '-';
+  document.getElementById('ed-location-row').style.display = loc ? 'flex' : 'none';
+  const inv = e.invoice || '';
+  document.getElementById('ed-invoice').textContent = inv || '-';
+  document.getElementById('ed-invoice-row').style.display = inv ? 'flex' : 'none';
+  const memo = e.memo || '';
+  document.getElementById('ed-memo').textContent = memo || '-';
+  document.getElementById('ed-memo-row').style.display = memo ? 'flex' : 'none';
+  document.getElementById('expense-detail-modal').classList.add('open');
+}
+
 function showScreen(name, btn) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -910,5 +927,39 @@ function showToast(msg) {
 
 init();
 </script>
+
+<div class="modal-backdrop" id="expense-detail-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="ed-merchant"></div>
+    <div style="display:grid;gap:12px;">
+      <div style="display:flex;justify-content:space-between;padding:12px;background:var(--surface2);border-radius:10px;">
+        <span style="color:var(--muted);font-size:14px;">Amount</span>
+        <span style="font-family:'Syne',sans-serif;font-weight:700;color:var(--danger);" id="ed-amount"></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:12px;background:var(--surface2);border-radius:10px;">
+        <span style="color:var(--muted);font-size:14px;">Date</span>
+        <span style="font-weight:500;" id="ed-date"></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:12px;background:var(--surface2);border-radius:10px;">
+        <span style="color:var(--muted);font-size:14px;">Category</span>
+        <span style="font-weight:500;" id="ed-category"></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:12px;background:var(--surface2);border-radius:10px;" id="ed-location-row">
+        <span style="color:var(--muted);font-size:14px;">Location</span>
+        <span style="font-weight:500;" id="ed-location"></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:12px;background:var(--surface2);border-radius:10px;" id="ed-invoice-row">
+        <span style="color:var(--muted);font-size:14px;">Invoice #</span>
+        <span style="font-weight:500;" id="ed-invoice"></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:12px;background:var(--surface2);border-radius:10px;" id="ed-memo-row">
+        <span style="color:var(--muted);font-size:14px;">Memo</span>
+        <span style="font-weight:500;" id="ed-memo"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
