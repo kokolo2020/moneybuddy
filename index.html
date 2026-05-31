@@ -786,6 +786,15 @@ function renderDashboard() {
 
   // Recent transactions
   renderRecent(allExpenses.slice(0, 8));
+
+  // Milestones + Points
+  const allTotal = allExpenses.reduce((s,e) => s + parseFloat(e.amount||0), 0);
+  renderMilestoneBar(allTotal);
+  renderProfileRewards(allTotal);
+
+  // Hero badge — current milestone
+  const curMs = getCurrentMilestone(allTotal);
+  document.getElementById('budget-badge').innerHTML = curMs ? curMs.emoji + ' ' + curMs.name : `Projected ฿${Math.round(projected).toLocaleString('th-TH')}/mo`;
 }
 
 function generateInsight(todayTotal, weekTotal, weekEx) {
