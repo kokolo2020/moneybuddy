@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="theme-color" content="#0d1117"/>
-<title>MoneyBuddy v2.1</title>
+<title>MoneyBuddy v2.3</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -281,7 +281,7 @@ select.form-input option { background: var(--surface2); }
       <div>
         <div class="topbar-title">MoneyBuddy</div>
         <div class="topbar-sub" id="greeting">Good morning 👋</div>
-        <div style="font-size:10px;color:var(--muted);opacity:0.5;">v2.1</div>
+        <div style="font-size:10px;color:var(--muted);opacity:0.5;">v2.3</div>
       </div>
       <div class="avatar" id="user-avatar" onclick="showProfile()">K</div>
     </div>
@@ -482,9 +482,12 @@ select.form-input option { background: var(--surface2); }
 
     <!-- USER INFO -->
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:14px;background:var(--surface2);border-radius:12px;">
-      <div class="avatar" id="profile-avatar" style="width:52px;height:52px;font-size:20px;">K</div>
+      <div class="avatar" id="profile-avatar" style="width:52px;height:52px;font-size:20px;cursor:pointer;position:relative;" onclick="document.getElementById('avatar-input').click()">K
+        <div style="position:absolute;bottom:-2px;right:-2px;width:18px;height:18px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;">✏️</div>
+      </div>
+      <input type="file" accept="image/*" id="avatar-input" style="display:none" onchange="handleAvatarUpload(this)"/>
       <div style="flex:1;">
-        <div id="profile-name" style="font-weight:600;font-size:16px;">Loading...</div>
+        <div id="profile-name" style="font-weight:600;font-size:16px;cursor:pointer;" onclick="editDisplayName()" title="Tap to edit">Loading... ✏️</div>
         <div id="profile-email" style="font-size:13px;color:var(--muted);">...</div>
       </div>
       <div style="background:rgba(108,92,231,0.12);color:var(--accent);font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;" id="profile-pts">0 pts</div>
@@ -732,18 +735,62 @@ function setGreeting() {
   document.getElementById('greeting').textContent = g + ' 👋';
 }
 
+function editDisplayName() {
+  const current = localStorage.getItem('mb-displayname') || document.getElementById('profile-name').textContent.replace(' ✏️','').trim();
+  const newName = prompt('Enter your display name:', current);
+  if (newName && newName.trim()) {
+    const name = newName.trim();
+    localStorage.setItem('mb-displayname', name);
+    document.getElementById('profile-name').textContent = name + ' ✏️';
+    document.getElementById('user-avatar').textContent = name[0].toUpperCase();
+    // update initials on avatar if no photo
+    if (!localStorage.getItem('mb-avatar')) {
+      const initials = name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+      document.getElementById('user-avatar').textContent = initials;
+    }
+  }
+}
+
+function handleAvatarUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target.result;
+    localStorage.setItem('mb-avatar', dataUrl);
+    applyAvatar(dataUrl);
+  };
+  reader.readAsDataURL(file);
+}
+
+function applyAvatar(dataUrl) {
+  const img = `<img src="${dataUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"/>`;
+  const overlay = `<div style="position:absolute;bottom:-2px;right:-2px;width:18px;height:18px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;">✏️</div>`;
+  document.getElementById('profile-avatar').innerHTML = img + overlay;
+  document.getElementById('user-avatar').innerHTML = img;
+}
+
 function setUserAvatar() {
   if (!currentUser) return;
-  const name = currentUser.user_metadata?.full_name || currentUser.email || 'U';
+  const name = localStorage.getItem('mb-displayname') || currentUser.user_metadata?.full_name || currentUser.email || 'U';
   const initials = name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
   document.getElementById('user-avatar').textContent = initials;
   document.getElementById('profile-avatar').textContent = initials;
-  document.getElementById('profile-name').textContent = name;
+  document.getElementById('profile-name').textContent = name + ' ✏️';
   document.getElementById('profile-email').textContent = currentUser.email;
+
+  // Check localStorage first (user-uploaded photo)
+  const savedAvatar = localStorage.getItem('mb-avatar');
+  if (savedAvatar) {
+    applyAvatar(savedAvatar);
+    return;
+  }
+
+  // Fall back to Google profile pic
   const pic = currentUser.user_metadata?.avatar_url;
   if (pic) {
     document.getElementById('user-avatar').innerHTML = `<img src="${pic}"/>`;
-    document.getElementById('profile-avatar').innerHTML = `<img src="${pic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"/>`;
+    document.getElementById('profile-avatar').innerHTML = `<img src="${pic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"/><div style="position:absolute;bottom:-2px;right:-2px;width:18px;height:18px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;">✏️</div>`;
   }
 }
 
