@@ -193,6 +193,12 @@ select.form-input option { background: var(--surface2); }
 </head>
 <body>
 
+<script>
+(function(){
+  const t = localStorage.getItem('mb-theme');
+  if (t) document.documentElement.setAttribute('data-theme', t);
+})();
+</script>
 <!-- LOGIN -->
 <div id="login-screen">
   <div style="width:72px;height:72px;background:#1a8a5a;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:8px;box-shadow:0 8px 24px rgba(26,138,90,0.3);">
@@ -239,6 +245,10 @@ select.form-input option { background: var(--surface2); }
       <div class="hero-amount"><span>฿</span><span id="today-total">0</span></div>
       <div class="hero-sub" id="today-txcount">0 transactions</div>
       <div class="hero-badge" id="budget-badge">✦ Loading...</div>
+      <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.15);border-radius:20px;padding:4px 10px;font-size:12px;color:#fff;margin-top:6px;margin-left:8px;">
+        <span id="hero-badge-emoji">🌱</span>
+        <span id="hero-points-display">0 pts</span>
+      </div>
     </div>
 
     <div class="stat-row">
@@ -424,6 +434,78 @@ select.form-input option { background: var(--surface2); }
         <div id="profile-email" style="font-size:13px;color:var(--muted);">...</div>
       </div>
     </div>
+
+    <!-- POINTS CARD -->
+    <div style="background:linear-gradient(135deg,var(--accent),var(--accent-dark));border-radius:14px;padding:16px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="color:rgba(255,255,255,0.6);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:4px;">MB Points</div>
+          <div style="color:#fff;font-family:'Syne',sans-serif;font-size:28px;font-weight:800;" id="profile-points">0 pts</div>
+          <div style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:2px;">1 pt per ฿10 spent</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.15);border-radius:12px;padding:10px 14px;text-align:center;">
+          <div style="font-size:26px;" id="profile-badge-emoji">🌱</div>
+          <div style="color:rgba(255,255,255,0.7);font-size:10px;margin-top:3px;" id="profile-badge-name">Starter</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MILESTONE PROGRESS -->
+    <div style="background:var(--surface2);border-radius:14px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px;">Milestones</div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;" id="milestone-dots"></div>
+      <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:6px;">
+        <div id="milestone-bar" style="height:100%;background:var(--accent);border-radius:3px;transition:width 0.6s;width:0%"></div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);text-align:right;" id="milestone-progress-text"></div>
+    </div>
+
+    <!-- BADGE GRID -->
+    <div style="background:var(--surface2);border-radius:14px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px;">Achievements</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;" id="badge-grid"></div>
+    </div>
+
+    <!-- HOW TO EARN -->
+    <div style="background:var(--surface2);border-radius:14px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px;">How to earn points</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div><div style="font-size:13px;color:var(--text);">📷 Scan a receipt</div><div style="font-size:11px;color:var(--muted);">Each scan logged</div></div>
+        <div style="background:rgba(108,92,231,0.12);color:var(--accent);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">+10 pts</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;">
+        <div><div style="font-size:13px;color:var(--text);">🎯 Hit milestone</div><div style="font-size:11px;color:var(--muted);">Spend thresholds</div></div>
+        <div style="background:rgba(108,92,231,0.12);color:var(--accent);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">+500 pts</div>
+      </div>
+    </div>
+
+    <!-- THEME PICKER -->
+    <div style="background:var(--surface2);border-radius:14px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:12px;">App Theme</div>
+      <div style="display:flex;gap:14px;">
+        <div style="text-align:center;cursor:pointer;" onclick="setTheme('purple')">
+          <div style="width:34px;height:34px;border-radius:50%;background:#6c5ce7;margin:0 auto 4px;border:3px solid transparent;" id="dot-purple"></div>
+          <div style="font-size:10px;color:var(--muted);">Purple</div>
+        </div>
+        <div style="text-align:center;cursor:pointer;" onclick="setTheme('green')">
+          <div style="width:34px;height:34px;border-radius:50%;background:#1a8a5a;margin:0 auto 4px;border:3px solid transparent;" id="dot-green"></div>
+          <div style="font-size:10px;color:var(--muted);">Green</div>
+        </div>
+        <div style="text-align:center;cursor:pointer;" onclick="setTheme('blue')">
+          <div style="width:34px;height:34px;border-radius:50%;background:#1a73e8;margin:0 auto 4px;border:3px solid transparent;" id="dot-blue"></div>
+          <div style="font-size:10px;color:var(--muted);">Blue</div>
+        </div>
+        <div style="text-align:center;cursor:pointer;" onclick="setTheme('red')">
+          <div style="width:34px;height:34px;border-radius:50%;background:#e03c3c;margin:0 auto 4px;border:3px solid transparent;" id="dot-red"></div>
+          <div style="font-size:10px;color:var(--muted);">Red</div>
+        </div>
+        <div style="text-align:center;cursor:pointer;" onclick="setTheme('gold')">
+          <div style="width:34px;height:34px;border-radius:50%;background:#d97706;margin:0 auto 4px;border:3px solid transparent;" id="dot-gold"></div>
+          <div style="font-size:10px;color:var(--muted);">Gold</div>
+        </div>
+      </div>
+    </div>
+
     <button class="btn btn-danger" onclick="signOut()">Sign Out</button>
   </div>
 </div>
@@ -587,6 +669,13 @@ function renderDashboard() {
   const dayOfMonth = new Date().getDate();
   const projected = monthTotal / dayOfMonth * 30;
   document.getElementById('budget-badge').textContent = `Projected ฿${Math.round(projected).toLocaleString('th-TH')}/mo`;
+  // Update hero points
+  const _pts = calcPoints(allExpenses);
+  const _ms = getCurrentMilestone(calcTotalSpent(allExpenses));
+  const hpe = document.getElementById('hero-points-display');
+  const hbe = document.getElementById('hero-badge-emoji');
+  if (hpe) hpe.textContent = _pts.toLocaleString() + ' pts';
+  if (hbe) hbe.textContent = _ms.emoji;
 
   // AI Insight
   generateInsight(todayTotal, weekTotal, weekEx);
@@ -596,6 +685,7 @@ function renderDashboard() {
 
   // Recent transactions
   renderRecent(allExpenses.slice(0, 8));
+  updateRewardsUI();
 }
 
 function generateInsight(todayTotal, weekTotal, weekEx) {
@@ -635,6 +725,20 @@ function renderCatBars(expenses) {
   `).join('');
 }
 
+function merchantIcon(name) {
+  const letter = (name || '?')[0].toUpperCase();
+  const gradients = [
+    ['#f59e0b','#ef4444'],['#6366f1','#8b5cf6'],['#0ea5e9','#6366f1'],
+    ['#10b981','#0ea5e9'],['#f43f5e','#f59e0b'],['#14b8a6','#10b981'],
+    ['#8b5cf6','#ec4899'],['#f97316','#eab308'],['#06b6d4','#3b82f6'],
+    ['#84cc16','#10b981'],['#e879f9','#818cf8'],['#fb7185','#f43f5e']
+  ];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  const g = gradients[Math.abs(hash) % gradients.length];
+  return `<div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,${g[0]},${g[1]});display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff;">${letter}</div>`;
+}
+
 function renderRecent(expenses) {
   if (expenses.length === 0) {
     document.getElementById('recent-list').innerHTML = '<div class="empty-state"><div class="emoji">🧾</div><p>No expenses yet. Snap a receipt!</p></div>';
@@ -644,7 +748,7 @@ function renderRecent(expenses) {
     const d = new Date(e.date || e.created_at);
     const dateStr = d.toLocaleDateString('en-GB', {day:'numeric',month:'short'});
     return `<div class="tx-item" onclick="showExpenseDetail(${JSON.stringify(e).replace(/"/g,'&quot;')})" style="cursor:pointer;">
-      <div class="tx-icon" style="background:${CAT_COLORS[e.category]||'#7d8590'}22;">${CAT_EMOJI[e.category]||'📦'}</div>
+      ${merchantIcon(e.merchant)}
       <div class="tx-info">
         <div class="tx-merchant">${e.merchant}</div>
         <div class="tx-meta">${e.category} · ${dateStr}</div>
@@ -757,6 +861,7 @@ async function saveExpense(exp) {
   allExpenses.unshift({ ...row, created_at: new Date().toISOString() });
   showToast(`✅ ${exp.merchant} — ฿${exp.amount.toLocaleString()}`);
   renderDashboard(); renderReports();
+  checkMilestoneUnlock();
 }
 
 // VOUCHERS
@@ -915,6 +1020,9 @@ function showScreen(name, btn) {
 
 function showProfile() {
   document.getElementById('profile-modal').classList.add('open');
+  updateRewardsUI();
+  const saved = localStorage.getItem('mb-theme') || 'purple';
+  updateThemeDots(saved);
 }
 
 // TOAST
@@ -923,6 +1031,120 @@ function showToast(msg) {
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// MILESTONES
+const MILESTONES = [
+  { threshold: 5000,   emoji: '🌱', name: 'Welcome',  label: '฿5k' },
+  { threshold: 25000,  emoji: '🥉', name: 'Bronze',   label: '฿25k' },
+  { threshold: 50000,  emoji: '🥈', name: 'Silver',   label: '฿50k' },
+  { threshold: 100000, emoji: '🥇', name: 'Gold',     label: '฿100k' },
+  { threshold: 200000, emoji: '🦄', name: 'Unicorn',  label: '฿200k' },
+];
+
+function calcPoints(expenses) {
+  const total = expenses.reduce((s,e) => s + parseFloat(e.amount||0), 0);
+  return Math.floor(total / 10);
+}
+
+function calcTotalSpent(expenses) {
+  return expenses.reduce((s,e) => s + parseFloat(e.amount||0), 0);
+}
+
+function getCurrentMilestone(total) {
+  let current = null;
+  for (const m of MILESTONES) {
+    if (total >= m.threshold) current = m;
+  }
+  return current || { emoji: '🌱', name: 'Starter', threshold: 0 };
+}
+
+function getNextMilestone(total) {
+  return MILESTONES.find(m => total < m.threshold) || null;
+}
+
+function updateRewardsUI() {
+  const total = calcTotalSpent(allExpenses);
+  const points = calcPoints(allExpenses);
+  const current = getCurrentMilestone(total);
+  const next = getNextMilestone(total);
+
+  // Points card
+  const ptEl = document.getElementById('profile-points');
+  if (ptEl) ptEl.textContent = points.toLocaleString() + ' pts';
+  const beEl = document.getElementById('profile-badge-emoji');
+  if (beEl) beEl.textContent = current.emoji;
+  const bnEl = document.getElementById('profile-badge-name');
+  if (bnEl) bnEl.textContent = current.name;
+
+  // Milestone bar
+  const barEl = document.getElementById('milestone-bar');
+  const textEl = document.getElementById('milestone-progress-text');
+  if (barEl && next) {
+    const prev = MILESTONES[MILESTONES.indexOf(next) - 1];
+    const prevThreshold = prev ? prev.threshold : 0;
+    const pct = Math.min(100, ((total - prevThreshold) / (next.threshold - prevThreshold)) * 100);
+    barEl.style.width = pct.toFixed(1) + '%';
+    if (textEl) textEl.textContent = '฿' + Math.round(total).toLocaleString() + ' / ฿' + next.threshold.toLocaleString();
+  } else if (barEl) {
+    barEl.style.width = '100%';
+    if (textEl) textEl.textContent = '🦄 Unicorn status achieved!';
+  }
+
+  // Milestone dots
+  const dotsEl = document.getElementById('milestone-dots');
+  if (dotsEl) {
+    dotsEl.innerHTML = MILESTONES.map(m => `
+      <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+        <div style="width:28px;height:28px;border-radius:50%;background:${total>=m.threshold?'var(--accent)':'var(--border)'};display:flex;align-items:center;justify-content:center;font-size:14px;">${total>=m.threshold?m.emoji:'·'}</div>
+        <div style="font-size:9px;color:var(--muted);">${m.label}</div>
+      </div>`).join('');
+  }
+
+  // Badge grid
+  const gridEl = document.getElementById('badge-grid');
+  if (gridEl) {
+    gridEl.innerHTML = MILESTONES.map(m => `
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <div style="width:44px;height:44px;border-radius:50%;background:${total>=m.threshold?'rgba(108,92,231,0.12)':'var(--border)'};display:flex;align-items:center;justify-content:center;font-size:22px;${total<m.threshold?'filter:grayscale(1);opacity:0.4':''};">${m.emoji}</div>
+        <div style="font-size:9px;color:${total>=m.threshold?'var(--accent)':'var(--muted)'};text-align:center;font-weight:${total>=m.threshold?'600':'400'};">${m.name}</div>
+      </div>`).join('');
+  }
+}
+
+let prevMilestoneCount = 0;
+function checkMilestoneUnlock() {
+  const total = calcTotalSpent(allExpenses);
+  const earned = MILESTONES.filter(m => total >= m.threshold);
+  if (earned.length > prevMilestoneCount && prevMilestoneCount > 0) {
+    const newMs = earned[earned.length - 1];
+    const next = getNextMilestone(total);
+    document.getElementById('ms-popup-emoji').textContent = newMs.emoji;
+    document.getElementById('ms-popup-title').textContent = newMs.name + ' achieved!';
+    document.getElementById('ms-popup-desc').textContent = 'You've spent ฿' + newMs.threshold.toLocaleString() + ' total. Amazing!';
+    document.getElementById('ms-popup-next').textContent = next ? 'Next: ' + next.emoji + ' ' + next.name + ' at ฿' + next.threshold.toLocaleString() : '🦄 You've reached the top!';
+    document.getElementById('milestone-modal').classList.add('open');
+  }
+  prevMilestoneCount = earned.length;
+}
+
+// THEME PICKER
+function setTheme(theme) {
+  if (theme === 'purple') {
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.removeItem('mb-theme');
+  } else {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('mb-theme', theme);
+  }
+  updateThemeDots(theme);
+}
+
+function updateThemeDots(theme) {
+  ['purple','green','blue','red','gold'].forEach(t => {
+    const el = document.getElementById('dot-' + t);
+    if (el) el.style.border = (t === theme || (t==='purple' && !theme)) ? '3px solid var(--text)' : '3px solid transparent';
+  });
 }
 
 init();
@@ -961,5 +1183,16 @@ init();
   </div>
 </div>
 
+<!-- MILESTONE POPUP -->
+<div class="modal-backdrop" id="milestone-modal" onclick="this.classList.remove('open')">
+  <div class="modal" style="text-align:center;">
+    <div class="modal-handle"></div>
+    <div style="font-size:56px;margin-bottom:12px;" id="ms-popup-emoji">🎉</div>
+    <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--text);margin-bottom:6px;" id="ms-popup-title">Milestone!</div>
+    <div style="font-size:14px;color:var(--muted);margin-bottom:16px;" id="ms-popup-desc"></div>
+    <div style="background:var(--accent);color:#fff;border-radius:12px;padding:12px;font-size:14px;font-weight:600;margin-bottom:16px;" id="ms-popup-next"></div>
+    <button class="btn btn-primary" onclick="document.getElementById('milestone-modal').classList.remove('open')">Awesome! 🎉</button>
+  </div>
+</div>
 </body>
 </html>
