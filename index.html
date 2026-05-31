@@ -641,7 +641,7 @@ function renderRecent(expenses) {
     return;
   }
   document.getElementById('recent-list').innerHTML = expenses.map(e => {
-    const d = new Date(e.created_at);
+    const d = new Date(e.date || e.created_at);
     const dateStr = d.toLocaleDateString('en-GB', {day:'numeric',month:'short'});
     return `<div class="tx-item">
       <div class="tx-icon" style="background:${CAT_COLORS[e.category]||'#7d8590'}22;">${CAT_EMOJI[e.category]||'📦'}</div>
@@ -745,7 +745,7 @@ async function saveManual() {
 
 async function saveExpense(exp) {
   if (!currentUser) return;
-  const row = { user_id: currentUser.id, ...exp, date: new Date().toISOString().split('T')[0] };
+  const row = { user_id: currentUser.id, ...exp, date: exp.date || new Date().toISOString().split('T')[0] };
   const { error } = await sb.from('expenses').insert(row);
   if (error) {
     // Demo mode fallback
