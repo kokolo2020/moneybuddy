@@ -277,12 +277,17 @@ select.form-input option { background: var(--surface2); }
       </div>
     </div>
 
-    <div class="upload-zone" onclick="document.getElementById('file-input').click()">
+    <div class="upload-zone">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16l-4-4m4 4l4-4m-4 4V4m-7 16h14"/></svg>
       <strong>Snap or Upload Receipt</strong>
       <p>Claude AI will extract all details</p>
     </div>
-    <input type="file" accept="image/*" id="file-input" onchange="handleFile(this)"/>
+    <div style="display:flex;gap:12px;justify-content:center;margin-top:12px;">
+      <button onclick="document.getElementById('camera-input').click()" style="flex:1;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:15px;cursor:pointer;">📷 Camera</button>
+      <button onclick="document.getElementById('gallery-input').click()" style="flex:1;padding:12px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:10px;font-size:15px;cursor:pointer;">🖼️ Gallery</button>
+    </div>
+    <input type="file" accept="image/*" capture="environment" id="camera-input" onchange="handleFile(this)" style="display:none"/>
+    <input type="file" accept="image/*" id="gallery-input" onchange="handleFile(this)" style="display:none"/>
     <img id="preview-img"/>
 
     <div id="parse-area"></div>
