@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="theme-color" content="#0d1117"/>
-<title>MoneyBuddy</title>
+<title>MoneyBuddy v2.1</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -281,6 +281,7 @@ select.form-input option { background: var(--surface2); }
       <div>
         <div class="topbar-title">MoneyBuddy</div>
         <div class="topbar-sub" id="greeting">Good morning 👋</div>
+        <div style="font-size:10px;color:var(--muted);opacity:0.5;">v2.1</div>
       </div>
       <div class="avatar" id="user-avatar" onclick="showProfile()">K</div>
     </div>
@@ -478,13 +479,50 @@ select.form-input option { background: var(--surface2); }
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">Profile</div>
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding:14px;background:var(--surface2);border-radius:12px;">
+
+    <!-- USER INFO -->
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:14px;background:var(--surface2);border-radius:12px;">
       <div class="avatar" id="profile-avatar" style="width:52px;height:52px;font-size:20px;">K</div>
-      <div>
+      <div style="flex:1;">
         <div id="profile-name" style="font-weight:600;font-size:16px;">Loading...</div>
         <div id="profile-email" style="font-size:13px;color:var(--muted);">...</div>
       </div>
+      <div style="background:rgba(108,92,231,0.12);color:var(--accent);font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;" id="profile-pts">0 pts</div>
     </div>
+
+    <!-- MILESTONE BADGES -->
+    <div style="background:var(--surface2);border-radius:12px;padding:14px;margin-bottom:12px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px;">Milestones</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;" id="profile-ms-status">Spend ฿5,000 to unlock your first badge</div>
+      <div class="badge-grid" id="profile-badges">
+        <div class="badge-item"><div class="badge-circle locked">🌱</div><div class="badge-name">฿5k</div></div>
+        <div class="badge-item"><div class="badge-circle locked">🥉</div><div class="badge-name">฿25k</div></div>
+        <div class="badge-item"><div class="badge-circle locked">🥈</div><div class="badge-name">฿50k</div></div>
+        <div class="badge-item"><div class="badge-circle locked">🥇</div><div class="badge-name">฿100k</div></div>
+        <div class="badge-item"><div class="badge-circle locked">🦄</div><div class="badge-name">฿200k</div></div>
+      </div>
+    </div>
+
+    <!-- HOW TO EARN -->
+    <div style="background:var(--surface2);border-radius:12px;padding:14px;margin-bottom:12px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px;">How to earn points</div>
+      <div class="earn-row"><span style="font-size:13px;color:var(--text);">📷 Scan a receipt</span><span style="background:rgba(108,92,231,0.12);color:var(--accent);font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;">1pt / ฿10</span></div>
+      <div class="earn-row"><span style="font-size:13px;color:var(--text);">✍️ Manual entry</span><span style="background:rgba(108,92,231,0.12);color:var(--accent);font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;">1pt / ฿10</span></div>
+      <div class="earn-row"><span style="font-size:13px;color:var(--text);">🏆 Hit milestone</span><span style="background:rgba(108,92,231,0.12);color:var(--accent);font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;">+500 pts</span></div>
+    </div>
+
+    <!-- THEME PICKER -->
+    <div style="background:var(--surface2);border-radius:12px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px;">App Theme</div>
+      <div class="theme-dots">
+        <div class="theme-dot active" style="background:#6c5ce7;" onclick="setTheme('purple',this)" id="theme-purple"></div>
+        <div class="theme-dot" style="background:#1a8a5a;" onclick="setTheme('green',this)" id="theme-green"></div>
+        <div class="theme-dot" style="background:#1a73e8;" onclick="setTheme('blue',this)" id="theme-blue"></div>
+        <div class="theme-dot" style="background:#dc2626;" onclick="setTheme('red',this)" id="theme-red"></div>
+        <div class="theme-dot" style="background:#d97706;" onclick="setTheme('gold',this)" id="theme-gold"></div>
+      </div>
+    </div>
+
     <button class="btn btn-danger" onclick="signOut()">Sign Out</button>
   </div>
 </div>
