@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="theme-color" content="#0d1117"/>
-<title>MoneyBuddy v2.3</title>
+<title>MoneyBuddy v2.5</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -281,7 +281,7 @@ select.form-input option { background: var(--surface2); }
       <div>
         <div class="topbar-title">MoneyBuddy</div>
         <div class="topbar-sub" id="greeting">Good morning 👋</div>
-        <div style="font-size:10px;color:var(--muted);opacity:0.5;">v2.3</div>
+        <div style="font-size:10px;color:var(--muted);opacity:0.5;">v2.5</div>
       </div>
       <div class="avatar" id="user-avatar" onclick="showProfile()">K</div>
     </div>
@@ -477,8 +477,10 @@ select.form-input option { background: var(--surface2); }
 <!-- PROFILE MODAL -->
 <div class="modal-backdrop" id="profile-modal" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">Profile</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div class="modal-title" style="margin-bottom:0;">Profile</div>
+      <button onclick="document.getElementById('profile-modal').classList.remove('open')" style="width:32px;height:32px;border-radius:50%;background:var(--surface2);border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>
 
     <!-- USER INFO -->
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:14px;background:var(--surface2);border-radius:12px;">
@@ -764,10 +766,16 @@ function handleAvatarUpload(input) {
 }
 
 function applyAvatar(dataUrl) {
-  const img = `<img src="${dataUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"/>`;
-  const overlay = `<div style="position:absolute;bottom:-2px;right:-2px;width:18px;height:18px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;">✏️</div>`;
-  document.getElementById('profile-avatar').innerHTML = img + overlay;
-  document.getElementById('user-avatar').innerHTML = img;
+  const overlay = `<div style="position:absolute;bottom:-2px;right:-2px;width:18px;height:18px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;">✏️</div>`;
+  const imgStyle = `width:100%;height:100%;border-radius:50%;object-fit:cover;`;
+  
+  // Update profile avatar (large, with edit overlay)
+  const profileAv = document.getElementById('profile-avatar');
+  profileAv.innerHTML = `<img src="${dataUrl}" style="${imgStyle}"/>${overlay}`;
+  
+  // Update topbar avatar (small, no overlay)
+  const userAv = document.getElementById('user-avatar');
+  if (userAv) userAv.innerHTML = `<img src="${dataUrl}" style="${imgStyle}"/>`;
 }
 
 function setUserAvatar() {
