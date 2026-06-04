@@ -895,7 +895,7 @@ function renderDashboard() {
   generateInsight(todayTotal, weekTotal, weekEx);
 
   // Category bars
-  renderCatBars(weekEx);
+  if (document.getElementById('cat-bars')) renderCatBars(weekEx);
 
   // Recent transactions
   renderRecent(allExpenses.slice(0, 8));
