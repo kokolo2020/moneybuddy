@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="theme-color" content="#0d1117"/>
-<title>iSave v3.0</title>
+<title>iSave v3.2</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -295,7 +295,7 @@ select.form-input option { background: var(--surface2); }
       <div>
         <div class="topbar-title">iSave</div>
         <div class="topbar-sub" id="greeting">Good morning 👋</div>
-        <div style="font-size:10px;color:var(--muted);opacity:0.5;">v3.0</div>
+        <div style="font-size:10px;color:var(--muted);opacity:0.5;">v3.2</div>
       </div>
       <div class="avatar" id="user-avatar" onclick="showProfile()">K</div>
     </div>
@@ -763,11 +763,11 @@ const SPONSORS = [
 function renderSponsors() {
   const grid = document.getElementById('sponsor-grid');
   if (!grid) return;
-  grid.innerHTML = SPONSORS.map(s => `
-    <div class="sponsor-tile" onclick="searchDealsByQuery('${s.query}','${s.name}')">
+  grid.innerHTML = SPONSORS.map((s,i) => `
+    <div class="sponsor-tile" onclick="searchDealsByQuery(SPONSORS[${i}].query,SPONSORS[${i}].name)">
       <img src="https://logo.clearbit.com/${s.domain}" 
            onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
-           alt="${s.name}"/>
+           alt="${s.name}" style="width:36px;height:36px;border-radius:8px;object-fit:contain;"/>
       <div style="display:none;width:36px;height:36px;border-radius:8px;background:var(--accent);align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;">${s.name[0]}</div>
       <span>${s.name}</span>
     </div>
@@ -814,11 +814,26 @@ If no deals found return empty array [].`,
     });
 
     const data = await response.json();
+    console.log('Deals API response:', JSON.stringify(data).substring(0, 500));
+    
+    if (data.error) throw new Error(data.error.message || 'API error');
+    
+    // Handle tool use responses — get the final text block
     const textBlock = data.content?.find(b => b.type === 'text');
-    if (!textBlock) throw new Error('No response');
+    if (!textBlock) throw new Error('No text in response: ' + JSON.stringify(data.content?.map(b=>b.type)));
 
-    const cleaned = textBlock.text.replace(/\`\`\`json\n?/g,'').replace(/\`\`\`\n?/g,'').trim();
-    const deals = JSON.parse(cleaned);
+    console.log('Raw text:', textBlock.text.substring(0, 300));
+    const cleaned = textBlock.text.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+    
+    let deals;
+    try {
+      deals = JSON.parse(cleaned);
+    } catch(e) {
+      // Try to extract JSON array from text
+      const match = cleaned.match(/\[[\s\S]*\]/);
+      if (match) deals = JSON.parse(match[0]);
+      else throw new Error('Could not parse deals: ' + cleaned.substring(0, 100));
+    }
 
     if (!deals.length) {
       results.innerHTML = `<div style="text-align:center;padding:30px 0;"><div style="font-size:36px;margin-bottom:8px;">🤷</div><div style="font-size:14px;font-weight:600;color:var(--text);">No deals found</div><div style="font-size:12px;color:var(--muted);margin-top:4px;">Try a different merchant or mall name</div></div>`;
@@ -837,6 +852,7 @@ If no deals found return empty array [].`,
       <div style="font-size:10px;color:var(--muted);text-align:center;margin-top:8px;">Results from live web search · May not be 100% accurate</div>`;
 
   } catch(err) {
+    console.error('Deals search error:', err);
     results.innerHTML = `<div style="text-align:center;padding:30px 0;"><div style="font-size:36px;margin-bottom:8px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--text);">Search failed</div><div style="font-size:12px;color:var(--muted);margin-top:4px;">${err.message}</div></div>`;
   }
 }
