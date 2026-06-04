@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="theme-color" content="#0d1117"/>
-<title>iSave v2.8</title>
+<title>iSave v2.9</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -240,6 +240,20 @@ select.form-input option { background: var(--surface2); }
 .milestone-popup.show { display: flex; }
 .milestone-popup-inner { background: var(--surface); border-radius: 24px; padding: 28px 24px; text-align: center; width: 300px; animation: popIn 0.4s cubic-bezier(.4,0,.2,1); }
 @keyframes popIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.deal-card { background: var(--surface); border-radius: 14px; padding: 14px; margin-bottom: 10px; border-left: 4px solid var(--accent); }
+.deal-card.bank { border-left-color: #1a73e8; }
+.deal-card.sale { border-left-color: #e84393; }
+.deal-card.free { border-left-color: #10b981; }
+.deal-card.food { border-left-color: #f59e0b; }
+.deal-title { font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px; }
+.deal-desc { font-size:12px;color:var(--muted);margin-bottom:8px;line-height:1.5; }
+.deal-tags { display:flex;gap:6px;flex-wrap:wrap; }
+.deal-tag { font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;background:var(--surface2);color:var(--muted); }
+.sponsor-tile { background:var(--surface);border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;border:1.5px solid var(--border);transition:border-color 0.2s; }
+.sponsor-tile:active { border-color:var(--accent); }
+.sponsor-tile img { width:36px;height:36px;border-radius:8px;object-fit:contain; }
+.sponsor-tile span { font-size:10px;font-weight:600;color:var(--muted);text-align:center; }
 </style>
 </head>
 <body>
@@ -281,7 +295,7 @@ select.form-input option { background: var(--surface2); }
       <div>
         <div class="topbar-title">iSave</div>
         <div class="topbar-sub" id="greeting">Good morning 👋</div>
-        <div style="font-size:10px;color:var(--muted);opacity:0.5;">v2.8</div>
+        <div style="font-size:10px;color:var(--muted);opacity:0.5;">v2.9</div>
       </div>
       <div class="avatar" id="user-avatar" onclick="showProfile()">K</div>
     </div>
@@ -417,6 +431,46 @@ select.form-input option { background: var(--surface2); }
   </div>
 
   <!-- REPORTS -->
+
+  <!-- DEALS SCREEN -->
+  <div class="screen" id="screen-deals">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Deals</div>
+        <div class="topbar-sub">Find offers before you pay</div>
+      </div>
+    </div>
+    <div style="padding: 0 16px 16px;">
+
+      <!-- Search bar -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;">
+        <input id="deals-search-input" type="text" placeholder="Type merchant or mall..." 
+          style="flex:1;padding:11px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);font-size:14px;color:var(--text);outline:none;font-family:'DM Sans',sans-serif;"
+          onkeydown="if(event.key==='Enter')searchDeals()"/>
+        <button onclick="searchDeals()" 
+          style="padding:11px 18px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">
+          Search
+        </button>
+      </div>
+
+      <!-- Sponsored logos -->
+      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Featured</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;" id="sponsor-grid">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Results area -->
+      <div id="deals-results">
+        <div style="text-align:center;padding:30px 0;">
+          <div style="font-size:40px;margin-bottom:10px;">💰</div>
+          <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px;">Find live deals</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;">Search any merchant or mall to see current promotions, credit card offers, and discounts</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <div class="screen" id="screen-reports">
     <div class="topbar">
       <div>
@@ -464,6 +518,10 @@ select.form-input option { background: var(--surface2); }
     <button class="nav-btn" onclick="showScreen('vouchers',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v7a1 1 0 01-1 1H5a1 1 0 01-1-1v-7"/><rect x="1" y="6" width="22" height="6" rx="1"/><path d="M12 6v13"/></svg>
       <span>Vouchers</span>
+    </button>
+    <button class="nav-btn" onclick="showScreen('deals',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <span>Deals</span>
     </button>
     <button class="nav-btn" onclick="showScreen('reports',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
@@ -686,6 +744,95 @@ function checkMilestoneUnlock(prevTotal, newTotal) {
       document.getElementById('milestone-popup').classList.add('show');
       break;
     }
+  }
+}
+
+
+// ── DEALS
+const SPONSORS = [
+  { name: 'Central', domain: 'central.co.th', query: 'Central mall Thailand' },
+  { name: 'KBank', domain: 'kasikornbank.com', query: 'KBank credit card deals Thailand' },
+  { name: 'SCB', domain: 'scb.co.th', query: 'SCB credit card promotions Thailand' },
+  { name: 'Grab', domain: 'grab.com', query: 'Grab Thailand promotions' },
+  { name: 'Siam Paragon', domain: 'siamparagon.co.th', query: 'Siam Paragon promotions' },
+  { name: 'Krungsri', domain: 'krungsri.com', query: 'Krungsri credit card deals Thailand' },
+  { name: "McDonald's", domain: 'mcdonalds.co.th', query: "McDonald's Thailand promotions" },
+  { name: 'Foodpanda', domain: 'foodpanda.co.th', query: 'Foodpanda Thailand promotions' },
+];
+
+function renderSponsors() {
+  const grid = document.getElementById('sponsor-grid');
+  if (!grid) return;
+  grid.innerHTML = SPONSORS.map(s => `
+    <div class="sponsor-tile" onclick="searchDealsByQuery('${s.query}','${s.name}')">
+      <img src="https://logo.clearbit.com/${s.domain}" 
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+           alt="${s.name}"/>
+      <div style="display:none;width:36px;height:36px;border-radius:8px;background:var(--accent);align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;">${s.name[0]}</div>
+      <span>${s.name}</span>
+    </div>
+  `).join('');
+}
+
+function searchDeals() {
+  const input = document.getElementById('deals-search-input');
+  const q = input.value.trim();
+  if (!q) return;
+  searchDealsByQuery(q + ' Thailand promotions deals discount 2026', q);
+}
+
+async function searchDealsByQuery(query, label) {
+  document.getElementById('deals-search-input').value = label;
+  const results = document.getElementById('deals-results');
+  results.innerHTML = `
+    <div style="text-align:center;padding:40px 0;">
+      <div style="width:52px;height:52px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 14px;">✦</div>
+      <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px;">Searching for deals...</div>
+      <div style="font-size:12px;color:var(--muted);">AI is scanning the web for current deals at ${label}</div>
+    </div>`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        system: `You are a deal finder for Thailand shoppers. Search for current promotions, credit card deals, discounts, and offers. 
+Return ONLY a JSON array with no markdown, no explanation:
+[{"title":"...","description":"...","type":"bank|sale|food|free","tags":["KBank","Min ฿500","Until 30 Jun"]}]
+Find 3-6 deals. Type must be one of: bank, sale, food, free. Tags should include card/bank name, minimum spend if any, validity date.
+If no deals found return empty array [].`,
+        messages: [{ role: 'user', content: `Find current deals and promotions for: ${query}` }]
+      })
+    });
+
+    const data = await response.json();
+    const textBlock = data.content?.find(b => b.type === 'text');
+    if (!textBlock) throw new Error('No response');
+
+    const cleaned = textBlock.text.replace(/\`\`\`json\n?/g,'').replace(/\`\`\`\n?/g,'').trim();
+    const deals = JSON.parse(cleaned);
+
+    if (!deals.length) {
+      results.innerHTML = `<div style="text-align:center;padding:30px 0;"><div style="font-size:36px;margin-bottom:8px;">🤷</div><div style="font-size:14px;font-weight:600;color:var(--text);">No deals found</div><div style="font-size:12px;color:var(--muted);margin-top:4px;">Try a different merchant or mall name</div></div>`;
+      return;
+    }
+
+    results.innerHTML = `
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">${deals.length} deals found · ${label}</div>
+      ${deals.map(d => `
+        <div class="deal-card ${d.type||''}">
+          <div class="deal-title">${d.title}</div>
+          <div class="deal-desc">${d.description}</div>
+          <div class="deal-tags">${(d.tags||[]).map(t => `<span class="deal-tag">${t}</span>`).join('')}</div>
+        </div>
+      `).join('')}
+      <div style="font-size:10px;color:var(--muted);text-align:center;margin-top:8px;">Results from live web search · May not be 100% accurate</div>`;
+
+  } catch(err) {
+    results.innerHTML = `<div style="text-align:center;padding:30px 0;"><div style="font-size:36px;margin-bottom:8px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--text);">Search failed</div><div style="font-size:12px;color:var(--muted);margin-top:4px;">${err.message}</div></div>`;
   }
 }
 
@@ -1253,6 +1400,7 @@ function showExpenseDetail(e) {
 }
 
 function showScreen(name, btn) {
+  if (name === 'deals') renderSponsors();
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('screen-' + name).classList.add('active');
