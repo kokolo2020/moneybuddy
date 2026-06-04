@@ -874,7 +874,8 @@ function renderDashboard() {
   const weekTotal = weekEx.reduce((s,e) => s + parseFloat(e.amount), 0);
   const monthTotal = monthEx.reduce((s,e) => s + parseFloat(e.amount), 0);
 
-  document.getElementById('today-total').textContent = todayTotal.toLocaleString('th-TH', {maximumFractionDigits:0});
+  const todayTotalEl = document.getElementById('today-total');
+  if (todayTotalEl) todayTotalEl.textContent = todayTotal.toLocaleString('th-TH', {maximumFractionDigits:0});
   document.getElementById('today-txcount').textContent = `${todayEx.length} transaction${todayEx.length !== 1 ? 's' : ''}`;
   document.getElementById('week-total').textContent = '฿' + weekTotal.toLocaleString('th-TH', {maximumFractionDigits:0});
   document.getElementById('month-total').textContent = '฿' + monthTotal.toLocaleString('th-TH', {maximumFractionDigits:0});
