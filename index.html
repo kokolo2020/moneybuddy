@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="theme-color" content="#0d1117"/>
-<title>MoneyBuddy v2.5</title>
+<title>MoneyBuddy v2.6</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -281,16 +281,29 @@ select.form-input option { background: var(--surface2); }
       <div>
         <div class="topbar-title">MoneyBuddy</div>
         <div class="topbar-sub" id="greeting">Good morning 👋</div>
-        <div style="font-size:10px;color:var(--muted);opacity:0.5;">v2.5</div>
+        <div style="font-size:10px;color:var(--muted);opacity:0.5;">v2.6</div>
       </div>
       <div class="avatar" id="user-avatar" onclick="showProfile()">K</div>
     </div>
 
     <div class="hero-card" id="hero-card">
-      <div class="hero-label">Spent Today</div>
-      <div class="hero-amount"><span>฿</span><span id="today-total">0</span></div>
-      <div class="hero-sub" id="today-txcount">0 transactions</div>
-      <div class="hero-badge" id="budget-badge">✦ Loading...</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <div class="hero-label" id="hero-month-label">June 2026</div>
+          <div class="hero-amount"><span>฿</span><span id="hero-month-total">0</span></div>
+          <div class="hero-sub" id="today-txcount">0 transactions</div>
+          <div class="hero-badge" id="budget-badge">✦ Loading...</div>
+        </div>
+        <div style="text-align:center;">
+          <svg width="72" height="72" viewBox="0 0 72 72" id="hero-ring">
+            <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="7"/>
+            <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="7" stroke-dasharray="176" stroke-dashoffset="176" stroke-linecap="round" transform="rotate(-90 36 36)" id="hero-ring-fill"/>
+            <text x="36" y="33" text-anchor="middle" font-size="11" font-weight="800" fill="white" font-family="DM Sans, sans-serif" id="hero-ring-pct">0%</text>
+            <text x="36" y="46" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.6)" font-family="DM Sans, sans-serif">today</text>
+          </svg>
+          <div style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:2px;" id="hero-today-amt">฿0 today</div>
+        </div>
+      </div>
       <div style="margin-top:12px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
           <span style="font-size:10px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.08em;" id="ms-label">Loading...</span>
@@ -927,22 +940,49 @@ function renderCatBars(expenses) {
   `).join('');
 }
 
+function getDateLabel(dateStr) {
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  const d = new Date(dateStr);
+  const todayStr = today.toISOString().split('T')[0];
+  const yestStr = yesterday.toISOString().split('T')[0];
+  const dStr = d.toISOString().split('T')[0];
+  if (dStr === todayStr) return 'Today';
+  if (dStr === yestStr) return 'Yesterday';
+  return d.toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'});
+}
+
 function renderRecent(expenses) {
   if (expenses.length === 0) {
     document.getElementById('recent-list').innerHTML = '<div class="empty-state"><div class="emoji">🧾</div><p>No expenses yet. Snap a receipt!</p></div>';
     return;
   }
-  document.getElementById('recent-list').innerHTML = expenses.map(e => {
-    const d = new Date(e.date || e.created_at);
-    const dateStr = d.toLocaleDateString('en-GB', {day:'numeric',month:'short'});
-    return `<div class="tx-item" onclick="showExpenseDetail(${JSON.stringify(e).replace(/"/g,'&quot;')})" style="cursor:pointer;">
-      ${merchantIcon(e.merchant)}
-      <div class="tx-info">
-        <div class="tx-merchant">${e.merchant}</div>
-        <div class="tx-meta">${e.category} · ${dateStr}</div>
-      </div>
-      <div class="tx-amount">-฿${parseFloat(e.amount).toLocaleString('th-TH',{maximumFractionDigits:0})}</div>
-    </div>`;
+
+  // Group by date
+  const groups = {};
+  expenses.forEach(e => {
+    const key = (e.date || e.created_at || '').split('T')[0];
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(e);
+  });
+
+  const sorted = Object.keys(groups).sort((a,b) => b.localeCompare(a));
+
+  document.getElementById('recent-list').innerHTML = sorted.map(key => {
+    const label = getDateLabel(key);
+    const items = groups[key].map(e => {
+      const loc = e.location ? `<span style="color:var(--muted);font-size:10px;"> · ${e.location}</span>` : '';
+      return `<div class="tx-item" onclick="showExpenseDetail(${JSON.stringify(e).replace(/"/g,'&quot;')})" style="cursor:pointer;">
+        ${merchantIcon(e.merchant)}
+        <div class="tx-info">
+          <div class="tx-merchant">${e.merchant}</div>
+          <div class="tx-meta">${e.category}${loc}</div>
+        </div>
+        <div class="tx-amount">-฿${parseFloat(e.amount).toLocaleString('th-TH',{maximumFractionDigits:0})}</div>
+      </div>`;
+    }).join('');
+    return `<div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;padding:8px 0 4px;">${label}</div>${items}`;
   }).join('');
 }
 
